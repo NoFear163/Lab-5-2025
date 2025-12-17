@@ -74,36 +74,19 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable, 
 
         TabulatedFunction other = (TabulatedFunction) o;
 
-        if (o instanceof ArrayTabulatedFunction) {
-            ArrayTabulatedFunction otherArray = (ArrayTabulatedFunction) o;
-
-            if (this.pointsCount != otherArray.pointsCount) return false;
-
-            for (int i = 0; i < pointsCount; i++) {
-                if (!this.points[i].equals(otherArray.points[i])) {
-                    return false;
-                }
-            }
-            return true;
-        }
         // Общий случай для любого TabulatedFunction
-        else {
-            if (this.pointsCount != other.getPointsCount()) return false;
+        if (this.pointsCount != other.getPointsCount()) return false;
 
-            for (int i = 0; i < pointsCount; i++) {
-                double x1 = this.points[i].getX();
-                double y1 = this.points[i].getY();
+        // Делегируем сравнение точек методу equals класса FunctionPoint
+        for (int i = 0; i < pointsCount; i++) {
+            FunctionPoint thisPoint = this.getPoint(i);
+            FunctionPoint otherPoint = other.getPoint(i);
 
-                double x2 = other.getPointX(i);
-                double y2 = other.getPointY(i);
-
-                final double EPS = 1e-10;
-                if (Math.abs(x1 - x2) > EPS || Math.abs(y1 - y2) > EPS) {
-                    return false;
-                }
+            if (!thisPoint.equals(otherPoint)) {
+                return false;
             }
-            return true;
         }
+        return true;
     }
 
     @Override

@@ -1,5 +1,4 @@
 package functions;
-
 import java.io.Serializable;
 
 public class FunctionPoint implements Serializable, Cloneable {
@@ -37,13 +36,11 @@ public class FunctionPoint implements Serializable, Cloneable {
         this.y = y;
     }
 
-    // 1. Переопределение toString()
     @Override
     public String toString() {
         return String.format("(%.2f; %.2f)", x, y);
     }
 
-    // 2. Переопределение equals()
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,39 +48,29 @@ public class FunctionPoint implements Serializable, Cloneable {
 
         FunctionPoint that = (FunctionPoint) o;
 
-        // Сравнение чисел с плавающей точкой с учетом погрешности
         final double EPS = 1e-10;
         return Math.abs(x - that.x) < EPS && Math.abs(y - that.y) < EPS;
     }
 
-    // 3. Переопределение hashCode()
     @Override
     public int hashCode() {
-        // Преобразование double в long bits
-        long xBits = Double.doubleToLongBits(x);
-        long yBits = Double.doubleToLongBits(y);
+        long xScaled = Math.round(x * 1e8);
+        long yScaled = Math.round(y * 1e8);
 
-        // Разделение каждого long на два int (старшие и младшие 32 бита)
-        int x1 = (int)(xBits >> 32);        // Старшие 32 бита x
-        int x2 = (int)(xBits & 0xFFFFFFFFL); // Младшие 32 бита x
-        int y1 = (int)(yBits >> 32);        // Старшие 32 бита y
-        int y2 = (int)(yBits & 0xFFFFFFFFL); // Младшие 32 бита y
-
-        // XOR всех компонентов
-        return x1 ^ x2 ^ y1 ^ y2;
+        int result = Long.hashCode(xScaled);
+        result = 31 * result + Long.hashCode(yScaled);
+        return result;
     }
 
-    // 4. Переопределение clone()
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public Object clone() {
         try {
-            return super.clone(); // Простое клонирование (shallow copy), так как нет ссылок на объекты
+            return super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError(); // Не может произойти, так как мы реализуем Cloneable
+            throw new InternalError(e);
         }
     }
 
-    // Дополнительный метод для получения копии (без исключений)
     public FunctionPoint copy() {
         return new FunctionPoint(this);
     }

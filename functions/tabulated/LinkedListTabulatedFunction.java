@@ -438,52 +438,20 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
         if (this == o) return true;
         if (o == null) return false;
 
-        // Сравнение с другим LinkedListTabulatedFunction
-        if (o instanceof LinkedListTabulatedFunction) {
-            LinkedListTabulatedFunction other = (LinkedListTabulatedFunction) o;
-
-            if (this.pointsCount != other.pointsCount) return false;
-
-            FunctionNode thisCurr = this.head.next;
-            FunctionNode otherCurr = other.head.next;
-
-            while (thisCurr != this.head && otherCurr != other.head) {
-               if (!thisCurr.point.equals(otherCurr.point)) {
-                    return false;
-                }
-                thisCurr = thisCurr.next;
-                otherCurr = otherCurr.next;
-            }
-
-            // Проверяем, что оба списка закончились одновременно
-            return thisCurr == this.head && otherCurr == other.head;
-        }
-
-        // Общий случай для любого TabulatedFunction
         if (!(o instanceof TabulatedFunction)) return false;
 
         TabulatedFunction other = (TabulatedFunction) o;
 
         if (this.pointsCount != other.getPointsCount()) return false;
 
-        // Сравниваем все точки
-        FunctionNode curr = head.next;
-        int i = 0;
-        while (curr != head && i < pointsCount) {
-            double x1 = curr.point.getX();
-            double y1 = curr.point.getY();
+        // Делегируем сравнение точек методу equals класса FunctionPoint
+        for (int i = 0; i < pointsCount; i++) {
+            FunctionPoint thisPoint = this.getPoint(i);
+            FunctionPoint otherPoint = other.getPoint(i);
 
-            double x2 = other.getPointX(i);
-            double y2 = other.getPointY(i);
-
-            // Сравнение при помощи машинного эпсилона
-            final double eps = 1e-10;
-            if (Math.abs(x1 - x2) > eps || Math.abs(y1 - y2) > eps) {
+            if (!thisPoint.equals(otherPoint)) {
                 return false;
             }
-
-            curr = curr.next;
-            i++;
         }
         return true;
     }
