@@ -438,18 +438,41 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
         if (this == o) return true;
         if (o == null) return false;
 
+        // Оптимизация для сравнения двух LinkedListTabulatedFunction
+        if (o instanceof LinkedListTabulatedFunction) {
+            LinkedListTabulatedFunction other = (LinkedListTabulatedFunction) o;
+
+            // Быстрая проверка количества точек
+            if (this.pointsCount != other.pointsCount) return false;
+
+            // Прямое сравнение узлов списка
+            FunctionNode thisCurr = this.head.next;
+            FunctionNode otherCurr = other.head.next;
+
+            while (thisCurr != this.head && otherCurr != other.head) {
+                // Делегируем сравнение методу equals класса FunctionPoint
+                if (!thisCurr.point.equals(otherCurr.point)) {
+                    return false;
+                }
+                thisCurr = thisCurr.next;
+                otherCurr = otherCurr.next;
+            }
+
+            // Проверяем, что оба списка закончились одновременно
+            return thisCurr == this.head && otherCurr == other.head;
+        }
+
+        // Общий случай для любого TabulatedFunction
         if (!(o instanceof TabulatedFunction)) return false;
 
         TabulatedFunction other = (TabulatedFunction) o;
 
+        // Проверка количества точек
         if (this.pointsCount != other.getPointsCount()) return false;
 
-        // Делегируем сравнение точек методу equals класса FunctionPoint
+        // Делегируем сравнение методу equals класса FunctionPoint
         for (int i = 0; i < pointsCount; i++) {
-            FunctionPoint thisPoint = this.getPoint(i);
-            FunctionPoint otherPoint = other.getPoint(i);
-
-            if (!thisPoint.equals(otherPoint)) {
+            if (!this.getPoint(i).equals(other.getPoint(i))) {
                 return false;
             }
         }
